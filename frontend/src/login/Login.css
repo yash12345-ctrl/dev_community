@@ -1,0 +1,395 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.login-page {
+  --lp-bg: #ffffff;
+  --lp-text: #000000;
+  --lp-muted: #666666;
+  --lp-border: #eaeaea;
+  --lp-border-hover: #dddddd;
+  
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--lp-text);
+  background: var(--lp-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Background ---------- */
+.login-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 0%, #fafafa 0%, #ffffff 100%);
+}
+.login-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: linear-gradient(to bottom, #000 10%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 10%, transparent 100%);
+}
+
+/* ---------- Top bar ---------- */
+.login-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.login-topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--lp-text);
+  letter-spacing: -0.2px;
+}
+.login-brand-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #000;
+}
+
+.login-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.login-nav a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lp-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.login-nav a:hover {
+  color: var(--lp-text);
+}
+
+.login-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.login-topbar-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lp-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.login-topbar-link:hover {
+  color: var(--lp-text);
+}
+
+.login-topbar-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  height: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: #000;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.login-topbar-cta:hover {
+  background: #333;
+}
+
+/* ---------- Main layout ---------- */
+.login-main {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 80px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 32px 80px;
+}
+
+/* ---------- Hero (left) ---------- */
+.login-hero {
+  animation: lp-fade 0.5s ease-out both;
+}
+
+.login-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--lp-muted);
+  background: #f7f7f7;
+  border: 1px solid var(--lp-border);
+  border-radius: 999px;
+}
+.login-pill b {
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #000;
+  background: #fff;
+  border: 1px solid var(--lp-border);
+  border-radius: 999px;
+}
+
+.login-headline {
+  margin: 0 0 20px;
+  font-size: clamp(36px, 4vw, 56px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--lp-text);
+}
+.login-gradient-text {
+  color: #666;
+}
+
+.login-lead {
+  max-width: 480px;
+  margin: 0 0 40px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--lp-muted);
+}
+
+/* Terminal Preview */
+.login-preview {
+  position: relative;
+  max-width: 500px;
+  border-radius: 12px;
+  background: #000;
+  border: 1px solid #222;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+.login-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  background: #111;
+  border-bottom: 1px solid #222;
+}
+.login-dot { width: 10px; height: 10px; border-radius: 50%; }
+.login-dot.r { background: #ff5f57; }
+.login-dot.y { background: #febc2e; }
+.login-dot.g { background: #28c840; }
+.login-preview-title {
+  margin-left: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #666;
+}
+.login-preview-body {
+  padding: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 2;
+  color: #888;
+}
+.login-log {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.login-log .ok { color: #fff; }
+.login-log .hl { color: #fff; }
+.login-log .url { color: #3291ff; text-decoration: underline; }
+.login-live {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #000;
+  background: #3291ff;
+  border-radius: 4px;
+}
+
+/* ---------- Card (right) ---------- */
+.login-card-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  justify-self: center;
+  animation: lp-fade 0.5s 0.1s ease-out both;
+}
+
+.login-card {
+  padding: 40px 32px 32px;
+  background: #ffffff;
+  border: 1px solid var(--lp-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+}
+
+.login-avatar {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 24px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border-radius: 10px;
+  background: #000;
+}
+
+.login-title {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  text-align: center;
+}
+.login-subtitle {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--lp-muted);
+  text-align: center;
+}
+
+.login-github-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 44px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.login-github-btn:hover {
+  background: #fff;
+  color: #000;
+}
+.login-github-btn .arrow {
+  transition: transform 0.2s;
+}
+.login-github-btn:hover .arrow {
+  transform: translateX(2px);
+}
+
+.login-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #aaa;
+}
+.login-or::before,
+.login-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--lp-border);
+}
+
+.login-features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.login-features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--lp-text);
+}
+.login-feature-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--lp-muted);
+  background: #f7f7f7;
+  border-radius: 6px;
+  border: 1px solid var(--lp-border);
+}
+
+.login-terms {
+  margin: 24px 0 0;
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+}
+.login-terms a {
+  color: var(--lp-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.login-terms a:hover {
+  color: var(--lp-text);
+}
+
+@keyframes lp-fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) {
+  .login-main {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 100px 24px 60px;
+  }
+  .login-card-wrap { order: -1; }
+  .login-hero { display: none; }
+  .login-nav { display: none; }
+  .login-topbar-inner { padding: 0 24px; }
+}

@@ -1,0 +1,33 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Engine Deployments & Cached User Data
+# IMPORTANT: This prevents uploading users' deployed code to your own GitHub repo!
+deployments/
+
+# Frontend Build Output
+frontend/dist/
+frontend/build/
+
+# IDE / OS Files
+.DS_Store
+.vscode/
+.idea/
+*.swp
