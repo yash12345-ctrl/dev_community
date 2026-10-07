@@ -81,6 +81,13 @@ export default function Projects({ onImport }: { onImport?: (repo: Repo) => void
             Authorization: `Bearer ${token}`
           }
         });
+        
+        if (res.status === 401) {
+          localStorage.removeItem('github_token');
+          window.location.href = '/';
+          return;
+        }
+
         const data = await res.json();
         if (data.projects) {
           setRepos(data.projects);

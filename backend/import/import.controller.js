@@ -12,9 +12,10 @@ const DEPLOYMENTS_DIR = path.join(__dirname, '..', '..', 'deployments');
 const CACHE_DIR = path.join(DEPLOYMENTS_DIR, '.cache');
 const EDGE_NODES_DIR = path.join(DEPLOYMENTS_DIR, 'edge-nodes');
 const ROUTER_FILE = path.join(DEPLOYMENTS_DIR, 'router.json');
+const LOGS_DIR = path.join(DEPLOYMENTS_DIR, 'logs');
 
 // Initialize Vercel-like infrastructure directories
-[DEPLOYMENTS_DIR, CACHE_DIR, EDGE_NODES_DIR].forEach(dir => {
+[DEPLOYMENTS_DIR, CACHE_DIR, EDGE_NODES_DIR, LOGS_DIR].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
@@ -56,7 +57,14 @@ exports.startDeployment = async (req, res) => {
 
 async function runAdvancedDeployment(deploymentId, projectName, full_name, token, rootDir) {
   const log = (msg) => {
+    // Save to memory (for active deployments)
+    if (!deploymentHistory[deploymentId]) deploymentHistory[deploymentId] = [];
     deploymentHistory[deploymentId].push(msg);
+    
+    // Save to disk (for persistent history)
+    const logLine = `[${deploymentId}] ${msg}\n`;
+    fs.appendFileSync(path.join(LOGS_DIR, `${deploymentId}.log`), logLine);
+    
     deploymentEvents.emit(`log-${deploymentId}`, msg);
     console.log(`[${deploymentId}] ${msg}`);
   };
@@ -218,6 +226,21 @@ exports.streamLogs = (req, res) => {
     deploymentHistory[id].forEach(msg => {
       res.write(`data: ${msg}\n\n`);
     });
+  } else {
+    // Try to load from disk if memory was wiped (e.g. server restart)
+    const logFile = path.join(LOGS_DIR, `${id}.log`);
+    if (fs.existsSync(logFile)) {
+      const pastLogs = fs.readFileSync(logFile, 'utf8').split('\n');
+      pastLogs.forEach(line => {
+        if (line.trim()) {
+          // Remove the "[deploymentId] " prefix that we prepended when saving to disk
+          const cleanMsg = line.replace(`[${id}] `, '');
+          res.write(`data: ${cleanMsg}\n\n`);
+        }
+      });
+    } else {
+      res.write(`data: [SYSTEM] No logs found for deployment ${id}. The build may be older than the new logging system.\n\n`);
+    }
   }
   
   const onLog = (msg) => {
@@ -228,4 +251,26 @@ exports.streamLogs = (req, res) => {
   req.on('close', () => {
     deploymentEvents.removeListener(`log-${id}`, onLog);
   });
+};
+
+exports.getDeployments = (req, res) => {
+  if (fs.existsSync(ROUTER_FILE)) {
+    const routerData = JSON.parse(fs.readFileSync(ROUTER_FILE, 'utf8'));
+    // Convert projects object into an array for the frontend
+    const deployments = Object.keys(routerData.projects).map(projectName => {
+      const proj = routerData.projects[projectName];
+      return {
+        id: proj.current,
+        project: projectName,
+        status: 'LIVE',
+        branch: 'main',
+        date: proj.updatedAt || new Date().toISOString()
+      };
+    });
+    // Sort by date descending
+    deployments.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    res.json(deployments);
+  } else {
+    res.json([]);
+  }
 };

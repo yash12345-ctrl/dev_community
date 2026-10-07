@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import Projects from '../projects/Projects'
 import Import from '../import/Import'
 import BuildLogs from '../build/BuildLogs'
+import Deployment from '../deployment/Deployment'
+import Overview from '../overview/Overview'
+import Firewall from '../firewall/Firewall'
 import './DashboardLayout.css'
 
 const BoltIcon = ({ size = 16 }: { size?: number }) => (
@@ -39,6 +42,9 @@ const SettingsIcon = () => (
 const BellIcon = () => (
   <svg {...iconProps}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
 )
+const FirewallShieldIcon = () => (
+  <svg {...iconProps}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+)
 
 const AddIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -62,6 +68,13 @@ function DashboardLayout() {
         const res = await fetch('https://api.github.com/user', {
           headers: { Authorization: `Bearer ${token}` }
         })
+        
+        if (res.status === 401) {
+          localStorage.removeItem('github_token');
+          window.location.href = '/';
+          return;
+        }
+
         const data = await res.json()
         setUser(data)
       } catch (err) {
@@ -93,11 +106,14 @@ function DashboardLayout() {
           <a href="#projects" className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('projects'); }}>
             <RepoIcon /> Projects
           </a>
-          <a href="#deployments" className="nav-item">
+          <a href="#deployments" className={`nav-item ${activeTab === 'deployments' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('deployments'); }}>
             <DeployIcon /> Deployments
           </a>
           
           <div className="nav-group-title">Settings</div>
+          <a href="#firewall" className={`nav-item ${activeTab === 'firewall' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('firewall'); }}>
+            <FirewallShieldIcon /> Firewall (WAF)
+          </a>
           <a href="#domains" className="nav-item">
             <DomainsIcon /> Domains
           </a>
@@ -130,6 +146,8 @@ function DashboardLayout() {
                {activeTab === 'projects' && <><RepoIcon /> Projects</>}
                {activeTab === 'import' && <><AddIcon /> Import</>}
                {activeTab === 'building' && <><SettingsIcon /> Building</>}
+               {activeTab === 'deployments' && <><DeployIcon /> Deployments</>}
+               {activeTab === 'firewall' && <><FirewallShieldIcon /> Firewall (WAF)</>}
             </span>
           </div>
           
@@ -152,27 +170,24 @@ function DashboardLayout() {
               {activeTab === 'projects' && 'Projects'}
               {activeTab === 'import' && 'Import Project'}
               {activeTab === 'building' && 'Deployment Logs'}
+              {activeTab === 'deployments' && 'Deployments'}
+              {activeTab === 'firewall' && 'Web Application Firewall'}
             </h1>
             <p className="content-subtitle">
               {activeTab === 'overview' && 'Manage your deployed frontend applications.'}
               {activeTab === 'projects' && 'Select a GitHub repository to deploy.'}
               {activeTab === 'import' && 'Configure and deploy your application.'}
               {activeTab === 'building' && 'Watch real-time terminal logs of your build process.'}
+              {activeTab === 'deployments' && 'View your recent edge deployments.'}
+              {activeTab === 'firewall' && 'Secure your projects at the Edge with advanced traffic filtering.'}
             </p>
           </div>
           
           {activeTab === 'overview' && (
-            <div className="dashboard-card empty-state">
-               <div className="empty-icon">
-                  <RepoIcon />
-               </div>
-               <h3 className="empty-title">No projects deployed yet</h3>
-               <p className="empty-desc">Get started by importing a repository from GitHub to deploy your first frontend application.</p>
-               <button className="create-btn" onClick={() => setActiveTab('import')}>
-                  <AddIcon />
-                  Import Project
-               </button>
-            </div>
+            <Overview 
+              onImport={() => setActiveTab('import')} 
+              onViewLogs={(id) => { setCurrentDeploymentId(id); setActiveTab('building'); }} 
+            />
           )}
           
           {activeTab === 'projects' && <Projects onImport={(repo) => { setSelectedRepo(repo); setActiveTab('import'); }} />}
@@ -187,6 +202,10 @@ function DashboardLayout() {
             deploymentId={currentDeploymentId} 
             onBack={() => setActiveTab('overview')} 
           />}
+          
+          {activeTab === 'deployments' && <Deployment onViewLogs={(id) => { setCurrentDeploymentId(id); setActiveTab('building'); }} />}
+          
+          {activeTab === 'firewall' && <Firewall />}
         </div>
       </main>
     </div>
